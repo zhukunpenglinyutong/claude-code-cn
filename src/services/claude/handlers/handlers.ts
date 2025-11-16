@@ -38,6 +38,8 @@ import type {
     ExecResponse,
     ListFilesRequest,
     ListFilesResponse,
+    StatPathRequest,
+    StatPathResponse,
     OpenContentRequest,
     OpenContentResponse,
     OpenURLRequest,
@@ -469,6 +471,45 @@ export async function handleListFiles(
     return {
         type: "list_files_response",
         files: await findFiles(pattern, context)
+    };
+}
+
+/**
+ * 统计路径类型（文件 / 目录 / 其它）
+ */
+export async function handleStatPath(
+    request: StatPathRequest,
+    context: HandlerContext
+): Promise<StatPathResponse> {
+    const { workspaceService, logService } = context;
+    const cwd = workspaceService.getDefaultWorkspaceFolder()?.uri.fsPath || process.cwd();
+    const paths = Array.isArray(request.paths) ? request.paths : [];
+
+    const entries: StatPathResponse["entries"] = [];
+
+    for (const raw of paths) {
+        if (!raw || typeof raw !== "string") {
+            continue;
+        }
+
+        const absolute = normalizeAbsolutePath(raw, cwd);
+
+        try {
+            const stat = await fs.promises.stat(absolute);
+            let type: StatPathResponse["entries"][number]["type"] = "other";
+
+            if (stat.isFile()) type = "file";
+            else if (stat.isDirectory()) type = "directory";
+
+            entries.push({ path: raw, type });
+        } catch {
+            entries.push({ path: raw, type: "not_found" });
+        }
+    }
+
+    return {
+        type: "stat_path_response",
+        entries
     };
 }
 

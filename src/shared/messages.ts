@@ -323,6 +323,28 @@ export interface ListFilesResponse {
 }
 
 /**
+ * 统计路径类型（文件 / 目录）
+ */
+export interface StatPathRequest {
+    type: "stat_path_request";
+    /**
+     * 路径数组，可以是工作区相对路径或绝对路径
+     */
+    paths: string[];
+}
+
+export interface StatPathResponse {
+    type: "stat_path_response";
+    entries: Array<{
+        path: string;
+        /**
+         * 文件类型：file / directory / other / not_found
+         */
+        type: "file" | "directory" | "other" | "not_found";
+    }>;
+}
+
+/**
  * 打开内容（临时文件）
  */
 export interface OpenContentRequest {
@@ -591,6 +613,7 @@ export type WebViewRequest =
     | ExecRequest
     | ListFilesRequest
     | OpenURLRequest
+    | StatPathRequest
     // | GetAuthStatusRequest
     // | LoginRequest
     // | SubmitOAuthCodeRequest
@@ -620,6 +643,7 @@ export type WebViewRequestResponse =
     | ExecResponse
     | ListFilesResponse
     | OpenURLResponse
+    | StatPathResponse
     // | GetAuthStatusResponse
     // | LoginResponse
     // | SubmitOAuthCodeResponse

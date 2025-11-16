@@ -173,6 +173,9 @@ export abstract class BaseTransport {
   listFiles(pattern?: string): Promise<any> {
     return this.sendRequest({ type: "list_files_request", pattern });
   }
+  statPaths(paths: string[]): Promise<any> {
+    return this.sendRequest({ type: "stat_path_request", paths });
+  }
   startNewConversationTab(initialPrompt?: string): Promise<any> {
     return this.sendRequest({
       type: "new_conversation_tab",
