@@ -392,6 +392,7 @@ function handleMentionKeydown(event: KeyboardEvent) {
   flex-shrink: 0;
   cursor: auto;
   width: 100%;
+  user-select: none;
 }
 
 .button-row {
